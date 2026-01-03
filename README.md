@@ -1,6 +1,6 @@
 # WordPress Auto-Setup Script
 
-**Версия скрипта:** 2.2-CLEAN-WITH-ARCHIVE  
+**Версия скрипта:** 2.3-ALL-PLUGINS  
 **Репозиторий:** https://github.com/Jamelich/wp-langing-auto-setup
 
 Автоматический скрипт для быстрого развёртывания чистого WordPress, установки необходимых плагинов и темы прямо на хостинг.
@@ -27,6 +27,8 @@ rm -f setup.sh && wget -q https://raw.githubusercontent.com/Jamelich/wp-langing-
 ## Установленные плагины
 
 Из официального репозитория WordPress:
+- Yoast SEO (wordpress-seo)
+- Contact Form 7 (contact-form-7)
 - Classic Editor (classic-editor)
 - Classic Widgets (classic-widgets)
 - Cyr-To-Lat (cyr2lat)
@@ -42,9 +44,13 @@ rm -f setup.sh && wget -q https://raw.githubusercontent.com/Jamelich/wp-langing-
 
 ```
 PLUGINS=(
+    "wordpress-seo"
+    "contact-form-7"
     "classic-editor"
     "classic-widgets"
     "cyr2lat"
+    "favicon-by-realfavicongenerator"
+    "yandex-metrica"
     # Добавьте или удалите слаги плагинов здесь
 )
 ```
