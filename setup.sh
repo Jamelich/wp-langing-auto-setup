@@ -1,12 +1,17 @@
 #!/bin/bash
 # ============================================
 # АВТОМАТИЧЕСКАЯ УСТАНОВКА WORDPRESS
-# Версия скрипта: 2.1-PLUGINS-UPDATE
+# Версия скрипта: 2.2-CLEAN-WITH-ARCHIVE
 # Репозиторий: https://github.com/Jamelich/wp-langing-auto-setup
 # ============================================
 
 echo "🚀 Начинаю автоматическую установку WordPress..."
 echo "============================================="
+
+# КРИТИЧЕСКИЙ БЛОК: Полная очистка папки (кроме самого скрипта)
+echo "🧹 Очищаю рабочую папку от старых файлов..."
+find . -maxdepth 1 ! -name 'setup.sh' ! -name '.' ! -name '..' -exec rm -rf {} + 2>/dev/null || true
+echo "✅ Папка очищена"
 
 # 1. УСТАНОВКА WORDPRESS
 echo "📦 Скачиваю и распаковываю WordPress..."
@@ -20,14 +25,7 @@ echo "🔌 Устанавливаю плагины..."
 cd wp-content/plugins/
 echo "   📂 Рабочая папка: $(pwd)"
 
-# ОСНОВНЫЕ ПЛАГИНЫ С WORDPRESS.ORG
-PLUGINS=(
-    "classic-editor"
-    "classic-widgets"
-    "cyr2lat"
-    "favicon-by-realfavicongenerator"
-    "yandex-metrica"
-)
+PLUGINS=("classic-editor" "classic-widgets" "cyr2lat" "favicon-by-realfavicongenerator" "yandex-metrica")
 ERRORS=0
 
 for plugin in "${PLUGINS[@]}"; do
@@ -40,7 +38,6 @@ for plugin in "${PLUGINS[@]}"; do
     fi
 done
 
-# КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Проверяем, есть ли файлы для распаковки
 ZIP_FILES=$(ls *.zip 2>/dev/null | wc -l)
 if [ "$ZIP_FILES" -gt 0 ]; then
     echo "   📦 Распаковываю архивы ($ZIP_FILES файл(ов))..."
@@ -51,12 +48,10 @@ else
     echo "⚠️  ВНИМАНИЕ: Не найдено архивов для распаковки"
 fi
 
-# 3. УСТАНОВКА CARBON FIELDS С GITHUB (ОСОБЫЙ СЛУЧАЙ)
+# 3. УСТАНОВКА CARBON FIELDS С GITHUB
 echo "⚙️  Устанавливаю Carbon Fields (с GitHub)..."
-CARBON_URL="https://github.com/htmlburger/carbon-fields/archive/refs/heads/master.zip"
-if wget -q "$CARBON_URL" -O carbon-fields.zip; then
+if wget -q "https://github.com/htmlburger/carbon-fields/archive/refs/heads/master.zip" -O carbon-fields.zip; then
     unzip -q carbon-fields.zip
-    # Переименовываем папку для правильной структуры WordPress
     mv carbon-fields-master carbon-fields
     rm -f carbon-fields.zip
     echo "✅ Carbon Fields установлен"
@@ -68,15 +63,23 @@ if [ "$ERRORS" -gt 0 ]; then
     echo "⚠️  Некоторые плагины не были загружены ($ERRORS ошибок)"
 fi
 
-# 4. УСТАНОВКА ТЕМЫ
-echo "🎨 Клонирую тему esalanding..."
+# 4. УСТАНОВКА ТЕМЫ (ИСПРАВЛЕННЫЙ БЛОК - через архив, а не git)
+echo "🎨 Устанавливаю тему esalanding (через архив GitHub)..."
 cd ../../
+if [ ! -d "wp-content/themes" ]; then
+    mkdir -p wp-content/themes
+fi
 cd wp-content/themes/
-if git clone -q https://github.com/Jamelich/esalanding.git esalanding 2>/dev/null; then
-    rm -rf esalanding/.git
-    echo "✅ Тема установлена"
+# Скачиваем архив темы с GitHub
+if wget -q "https://github.com/Jamelich/esalanding/archive/refs/heads/main.zip" -O esalanding.zip; then
+    unzip -q esalanding.zip
+    # Переименовываем распакованную папку
+    mv esalanding-main esalanding
+    rm -f esalanding.zip
+    echo "✅ Тема esalanding установлена"
 else
-    echo "⚠️  Не удалось клонировать тему (проверьте доступ к GitHub)"
+    echo "❌ ФАТАЛЬНАЯ ОШИБКА: Не удалось скачать тему!"
+    exit 1
 fi
 
 # 5. ФИНАЛЬНАЯ ПРОВЕРКА
@@ -88,11 +91,14 @@ cd ../../
 echo "Установленные плагины:"
 ls -1 wp-content/plugins/
 echo ""
+echo "Установленные темы:"
+ls -1 wp-content/themes/
+echo ""
 echo "Следующие шаги:"
 echo "1. 📂 Создайте базу данных MySQL"
 echo "2. 🌐 Перейдите по адресу сайта"
 echo "3. 🔧 Завершите установку WordPress"
 echo "4. ⚙️  Активируйте плагины и тему 'esalanding'"
 echo ""
-echo "Скрипт v2.1-PLUGINS-UPDATE | Разработан для Jamelich"
+echo "Скрипт v2.2-CLEAN-WITH-ARCHIVE | Разработан для Jamelich"
 echo "============================================="
