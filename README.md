@@ -13,4 +13,4 @@
 Выполните в терминале на вашем хостинге (в папке будущего сайта):
 
 ```bash
-wget -q https://raw.githubusercontent.com/Jamelich/wp-auto-setup/main/setup.sh && bash setup.sh
+wget -q https://raw.githubusercontent.com/Jamelich/wp-landing-auto-setup/main/setup.sh && bash setup.sh
