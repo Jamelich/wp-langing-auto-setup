@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================
 # АВТОМАТИЧЕСКАЯ УСТАНОВКА WORDPRESS
-# Версия скрипта: 2.2-CLEAN-WITH-ARCHIVE
+# Версия скрипта: 2.3-ALL-PLUGINS
 # Репозиторий: https://github.com/Jamelich/wp-langing-auto-setup
 # ============================================
 
@@ -20,12 +20,21 @@ tar -xzf latest.tar.gz --strip-components=1
 rm -f latest.tar.gz
 echo "✅ WordPress установлен"
 
-# 2. УСТАНОВКА ПЛАГИНОВ
+# 2. УСТАНОВКА ВСЕХ ПЛАГИНОВ
 echo "🔌 Устанавливаю плагины..."
 cd wp-content/plugins/
 echo "   📂 Рабочая папка: $(pwd)"
 
-PLUGINS=("classic-editor" "classic-widgets" "cyr2lat" "favicon-by-realfavicongenerator" "yandex-metrica")
+# ПОЛНЫЙ СПИСОК ВСЕХ ПЛАГИНОВ (старые + новые)
+PLUGINS=(
+    "wordpress-seo"                   # Yoast SEO (ВЕРНУЛ!)
+    "contact-form-7"                  # Contact Form 7 (ВЕРНУЛ!)
+    "classic-editor"                  # Classic Editor
+    "classic-widgets"                 # Classic Widgets
+    "cyr2lat"                         # Cyr-To-Lat
+    "favicon-by-realfavicongenerator" # Favicon by RealFaviconGenerator
+    "yandex-metrica"                  # Яндекс Метрика
+)
 ERRORS=0
 
 for plugin in "${PLUGINS[@]}"; do
@@ -63,17 +72,15 @@ if [ "$ERRORS" -gt 0 ]; then
     echo "⚠️  Некоторые плагины не были загружены ($ERRORS ошибок)"
 fi
 
-# 4. УСТАНОВКА ТЕМЫ (ИСПРАВЛЕННЫЙ БЛОК - через архив, а не git)
+# 4. УСТАНОВКА ТЕМЫ (через архив, а не git)
 echo "🎨 Устанавливаю тему esalanding (через архив GitHub)..."
 cd ../../
 if [ ! -d "wp-content/themes" ]; then
     mkdir -p wp-content/themes
 fi
 cd wp-content/themes/
-# Скачиваем архив темы с GitHub
 if wget -q "https://github.com/Jamelich/esalanding/archive/refs/heads/main.zip" -O esalanding.zip; then
     unzip -q esalanding.zip
-    # Переименовываем распакованную папку
     mv esalanding-main esalanding
     rm -f esalanding.zip
     echo "✅ Тема esalanding установлена"
@@ -100,5 +107,5 @@ echo "2. 🌐 Перейдите по адресу сайта"
 echo "3. 🔧 Завершите установку WordPress"
 echo "4. ⚙️  Активируйте плагины и тему 'esalanding'"
 echo ""
-echo "Скрипт v2.2-CLEAN-WITH-ARCHIVE | Разработан для Jamelich"
+echo "Скрипт v2.3-ALL-PLUGINS | Разработан для Jamelich"
 echo "============================================="
