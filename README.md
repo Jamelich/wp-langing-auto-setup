@@ -34,6 +34,7 @@ rm -f setup.sh && wget -q https://raw.githubusercontent.com/Jamelich/wp-langing-
 - Cyr-To-Lat (cyr2lat)
 - Favicon by RealFaviconGenerator (favicon-by-realfavicongenerator)
 - Яндекс Метрика (yandex-metrica)
+- Cookie Notice & Compliance for GDPR/CCPA - в разработке
 
 С GitHub:
 - Carbon Fields — фреймворк кастомных полей
