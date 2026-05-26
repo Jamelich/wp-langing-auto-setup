@@ -32,7 +32,7 @@ PLUGINS=(
     "classic-editor"                  # Classic Editor
     "classic-widgets"                 # Classic Widgets
     "cyr2lat"                         # Cyr-To-Lat
-    "favicon-by-realfavicongenerator" # Favicon by RealFaviconGenerator
+    "cookie-law-info" # cookie-law-info
     "yandex-metrica"                  # Яндекс Метрика
 )
 ERRORS=0
