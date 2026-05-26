@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================
 # АВТОМАТИЧЕСКАЯ УСТАНОВКА WORDPRESS
-# Версия скрипта: 2.5-CRB-ONLY-DOWNLOAD
+# Версия скрипта: 2.7-CRB-COMPOSER
 # ============================================
 
 echo "🚀 Начинаю автоматическую установку WordPress..."
@@ -56,8 +56,8 @@ if [ -d "esalanding-main" ]; then
 fi
 echo "✅ Тема esalanding установлена"
 
-# 4. СКАЧИВАНИЕ CARBON FIELDS В ПАПКУ inc (ПРОСТО СКАЧАТЬ, БЕЗ КОМПОЗЕРА)
-echo "⚙️ Скачиваю Carbon Fields в папку inc темы..."
+# 4. УСТАНОВКА CARBON FIELDS ЧЕРЕЗ COMPOSER В ПАПКУ inc
+echo "⚙️ Устанавливаю Carbon Fields в папку inc через composer..."
 
 # Создаём папку inc
 mkdir -p esalanding/inc
@@ -65,20 +65,19 @@ mkdir -p esalanding/inc
 # Переходим в папку inc
 cd esalanding/inc
 
-# Просто скачиваем архив и распаковываем
-wget -q "https://github.com/htmlburger/carbon-fields/archive/refs/heads/master.zip" -O carbon-fields.zip
-unzip -q carbon-fields.zip
+# Удаляем старый vendor, если есть
+rm -rf vendor composer.json composer.lock
 
-# Перемещаем содержимое из carbon-fields-master в текущую папку
-if [ -d "carbon-fields-master" ]; then
-    mv carbon-fields-master/* ./
-    rm -rf carbon-fields-master
+# Устанавливаем carbon-fields через composer
+composer require htmlburger/carbon-fields
+
+# Проверяем результат
+if [ -d "vendor" ] && [ -f "vendor/autoload.php" ]; then
+    echo "✅ Carbon Fields установлен, папка vendor есть, autoload.php есть"
+else
+    echo "❌ Ошибка: папка vendor или autoload.php не созданы"
+    exit 1
 fi
-
-# Удаляем архив
-rm -f carbon-fields.zip
-
-echo "✅ Carbon Fields скачан в wp-content/themes/esalanding/inc/"
 
 # Возвращаемся в корень
 cd ../../../
@@ -89,9 +88,15 @@ echo "============================================="
 echo "✨ УСТАНОВКА ЗАВЕРШЕНА!"
 echo "============================================="
 echo ""
-echo "📂 Carbon Fields лежит тут:"
-echo "   wp-content/themes/esalanding/inc/"
+echo "📂 Carbon Fields установлен в:"
+echo "   wp-content/themes/esalanding/inc/vendor/"
 echo ""
-echo "📌 Дальше сами: подключайте в functions.php через vendor/autoload.php"
+echo "📂 Структура:"
+echo "   esalanding/inc/"
+echo "   ├── vendor/"
+echo "   │   ├── autoload.php"
+echo "   │   └── htmlburger/carbon-fields"
+echo "   ├── composer.json"
+echo "   └── composer.lock"
 echo ""
 echo "============================================="
