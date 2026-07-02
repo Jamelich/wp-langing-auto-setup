@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================
 # АВТОМАТИЧЕСКАЯ УСТАНОВКА WORDPRESS
-# Версия скрипта: 3.0-LATEST
+# Версия скрипта: 3.1-COMPOSER-FIX
 # ============================================
 
 echo "🚀 Начинаю автоматическую установку WordPress..."
@@ -12,14 +12,14 @@ echo "🧹 Очищаю рабочую папку от старых файлов
 find . -maxdepth 1 ! -name 'setup.sh' ! -name '.' ! -name '..' -exec rm -rf {} + 2>/dev/null || true
 echo "✅ Папка очищена"
 
-# 1. УСТАНОВКА WORDPRESS (ВСЕГДА СВЕЖАЯ ВЕРСИЯ)
+# 1. УСТАНОВКА WORDPRESS
 echo "📦 Скачиваю и распаковываю WordPress (последняя версия)..."
 wget -q https://wordpress.org/latest.tar.gz
 tar -xzf latest.tar.gz --strip-components=1
 rm -f latest.tar.gz
 echo "✅ WordPress установлен"
 
-# 2. УСТАНОВКА ПЛАГИНОВ (ВСЕГДА СВЕЖИЕ ВЕРСИИ)
+# 2. УСТАНОВКА ПЛАГИНОВ
 echo "🔌 Устанавливаю плагины (последние версии)..."
 cd wp-content/plugins/
 
@@ -42,7 +42,7 @@ done
 
 echo "✅ Плагины установлены"
 
-# 3. УСТАНОВКА ТЕМЫ (СВЕЖАЯ С GITHUB)
+# 3. УСТАНОВКА ТЕМЫ
 cd ../../
 echo "🎨 Устанавливаю тему esalanding (последняя версия с GitHub)..."
 cd wp-content/themes/
@@ -56,7 +56,7 @@ if [ -d "esalanding-main" ]; then
 fi
 echo "✅ Тема esalanding установлена"
 
-# 4. УСТАНОВКА CARBON FIELDS (СВЕЖАЯ ВЕРСИЯ ЧЕРЕЗ COMPOSER)
+# 4. УСТАНОВКА CARBON FIELDS (ПРАВИЛЬНАЯ)
 echo "⚙️ Устанавливаю Carbon Fields (последняя версия через composer)..."
 
 # Создаём папку inc
@@ -68,25 +68,36 @@ cd esalanding/inc
 # Удаляем старый vendor, если есть
 rm -rf vendor composer.json composer.lock
 
-# СОЗДАЁМ composer.json БЕЗ ОГРАНИЧЕНИЙ ПО ВЕРСИИ (всегда свежая)
-echo '{
+# ПРИНУДИТЕЛЬНО СОЗДАЁМ composer.json
+cat > composer.json << 'EOF'
+{
     "require": {
-        "htmlburger/carbon-fields": "*"
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
-}' > composer.json
+        "htmlburger/carbon-fields": "dev-master"
+    }
+}
+EOF
 
-# Устанавливаем carbon-fields (всегда свежая версия)
-composer require htmlburger/carbon-fields:* --no-interaction
+# Проверяем, что файл создался
+if [ ! -f "composer.json" ]; then
+    echo "❌ Ошибка: composer.json не создан"
+    exit 1
+fi
+
+echo "   ✅ composer.json создан"
+echo "   Содержимое:"
+cat composer.json
+
+# Устанавливаем carbon-fields
+echo "   📥 Устанавливаю htmlburger/carbon-fields..."
+composer require htmlburger/carbon-fields:dev-master --no-interaction --no-scripts
 
 # Проверяем результат
 if [ -d "vendor" ] && [ -f "vendor/autoload.php" ]; then
-    echo "✅ Carbon Fields установлен (последняя версия)"
-    echo "   Текущая версия:"
-    composer show htmlburger/carbon-fields 2>/dev/null | grep versions || echo "   ✅ Установлено"
+    echo "✅ Carbon Fields установлен (последняя версия dev-master)"
 else
     echo "❌ Ошибка: папка vendor или autoload.php не созданы"
+    echo "   Содержимое папки $(pwd):"
+    ls -la
     exit 1
 fi
 
@@ -98,12 +109,6 @@ echo ""
 echo "============================================="
 echo "✨ УСТАНОВКА ЗАВЕРШЕНА!"
 echo "============================================="
-echo ""
-echo "📂 Все компоненты установлены в свежих версиях:"
-echo "   ✅ WordPress - последняя стабильная"
-echo "   ✅ Плагины - последние стабильные"
-echo "   ✅ Тема esalanding - последняя с GitHub"
-echo "   ✅ Carbon Fields - последняя версия"
 echo ""
 echo "📂 Carbon Fields установлен в:"
 echo "   wp-content/themes/esalanding/inc/vendor/"
