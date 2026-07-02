@@ -1,26 +1,29 @@
 #!/bin/bash
 # ============================================
 # АВТОМАТИЧЕСКАЯ УСТАНОВКА WORDPRESS
-# Версия скрипта: 2.9-PHP-FORCE
+# Версия скрипта: 3.0-BEGET-FIX
 # ============================================
 
 echo "🚀 Начинаю автоматическую установку WordPress..."
 echo "============================================="
 
-# ПРИНУДИТЕЛЬНО ИСПОЛЬЗУЕМ PHP 8.3 (ЕСЛИ ДОСТУПЕН)
+# ПРИНУДИТЕЛЬНО ИСПОЛЬЗУЕМ PHP 8.3 (ДЛЯ BEGET)
 PHP_BIN=""
-if [ -f "/usr/local/php83/bin/php" ]; then
-    PHP_BIN="/usr/local/php83/bin/php"
+if [ -f "/usr/local/php/cgi/8.3" ]; then
+    PHP_BIN="/usr/local/php/cgi/8.3"
     echo "✅ Использую PHP 8.3: $PHP_BIN"
-elif [ -f "/usr/local/php82/bin/php" ]; then
-    PHP_BIN="/usr/local/php82/bin/php"
+elif [ -f "/usr/local/php/cgi/8.2" ]; then
+    PHP_BIN="/usr/local/php/cgi/8.2"
     echo "✅ Использую PHP 8.2: $PHP_BIN"
-elif [ -f "/usr/local/php81/bin/php" ]; then
-    PHP_BIN="/usr/local/php81/bin/php"
+elif [ -f "/usr/local/php/cgi/8.1" ]; then
+    PHP_BIN="/usr/local/php/cgi/8.1"
     echo "✅ Использую PHP 8.1: $PHP_BIN"
-elif [ -f "/usr/local/php80/bin/php" ]; then
-    PHP_BIN="/usr/local/php80/bin/php"
+elif [ -f "/usr/local/php/cgi/8.0" ]; then
+    PHP_BIN="/usr/local/php/cgi/8.0"
     echo "✅ Использую PHP 8.0: $PHP_BIN"
+elif [ -f "/usr/local/php/cgi/7.4" ]; then
+    PHP_BIN="/usr/local/php/cgi/7.4"
+    echo "✅ Использую PHP 7.4: $PHP_BIN"
 else
     PHP_BIN="php"
     echo "⚠️ Использую системный PHP: $(php -v | head -1)"
@@ -96,7 +99,7 @@ if [ -d "esalanding-main" ]; then
 fi
 echo "✅ Тема esalanding установлена"
 
-# 4. УСТАНОВКА CARBON FIELDS (С ПРИНУДИТЕЛЬНЫМ PHP)
+# 4. УСТАНОВКА CARBON FIELDS
 echo "⚙️ Устанавливаю Carbon Fields в папку inc через composer..."
 
 # Создаём папку inc
@@ -114,7 +117,7 @@ if ! command -v composer &> /dev/null; then
     exit 1
 fi
 
-# Устанавливаем carbon-fields через composer С ПРИНУДИТЕЛЬНЫМ PHP
+# Устанавливаем carbon-fields через composer
 echo "   📥 Устанавливаю htmlburger/carbon-fields (с PHP $PHP_VERSION)..."
 composer require htmlburger/carbon-fields
 
