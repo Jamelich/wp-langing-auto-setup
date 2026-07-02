@@ -1,47 +1,50 @@
 #!/bin/bash
 # ============================================
 # АВТОМАТИЧЕСКАЯ УСТАНОВКА WORDPRESS
-# Версия скрипта: 2.8-PHP-CHECK
+# Версия скрипта: 2.9-PHP-FORCE
 # ============================================
 
 echo "🚀 Начинаю автоматическую установку WordPress..."
 echo "============================================="
 
+# ПРИНУДИТЕЛЬНО ИСПОЛЬЗУЕМ PHP 8.3 (ЕСЛИ ДОСТУПЕН)
+PHP_BIN=""
+if [ -f "/usr/local/php83/bin/php" ]; then
+    PHP_BIN="/usr/local/php83/bin/php"
+    echo "✅ Использую PHP 8.3: $PHP_BIN"
+elif [ -f "/usr/local/php82/bin/php" ]; then
+    PHP_BIN="/usr/local/php82/bin/php"
+    echo "✅ Использую PHP 8.2: $PHP_BIN"
+elif [ -f "/usr/local/php81/bin/php" ]; then
+    PHP_BIN="/usr/local/php81/bin/php"
+    echo "✅ Использую PHP 8.1: $PHP_BIN"
+elif [ -f "/usr/local/php80/bin/php" ]; then
+    PHP_BIN="/usr/local/php80/bin/php"
+    echo "✅ Использую PHP 8.0: $PHP_BIN"
+else
+    PHP_BIN="php"
+    echo "⚠️ Использую системный PHP: $(php -v | head -1)"
+fi
+
 # ПРОВЕРКА ВЕРСИИ PHP
 echo "🔍 Проверяю версию PHP..."
-PHP_VERSION=$(php -v | head -1 | cut -d' ' -f2 | cut -d'.' -f1,2)
+PHP_VERSION=$($PHP_BIN -v | head -1 | cut -d' ' -f2 | cut -d'.' -f1,2)
+echo "   Версия PHP: $PHP_VERSION"
 
 if [ -z "$PHP_VERSION" ]; then
     echo "❌ ОШИБКА: PHP не найден!"
     exit 1
 fi
 
-echo "   Версия PHP: $PHP_VERSION"
-
 # Сравниваем с минимальной версией (7.4)
 MIN_VERSION="7.4"
 if [ "$(printf '%s\n' "$MIN_VERSION" "$PHP_VERSION" | sort -V | head -n1)" != "$MIN_VERSION" ]; then
     echo "❌ ОШИБКА: Версия PHP $PHP_VERSION слишком старая!"
     echo "   Требуется PHP $MIN_VERSION или выше"
-    echo "   Установите PHP 7.4+ в панели хостинга"
     exit 1
 fi
 
-# Дополнительная проверка на слишком новую версию (максимум 8.3)
-MAX_VERSION="8.3"
-if [ "$(printf '%s\n' "$MAX_VERSION" "$PHP_VERSION" | sort -V | head -n1)" != "$PHP_VERSION" ]; then
-    echo "⚠️ ПРЕДУПРЕЖДЕНИЕ: Версия PHP $PHP_VERSION очень новая"
-    echo "   Рекомендуется PHP 8.2 или 8.3"
-    echo "   Если возникнут ошибки, понизьте версию PHP"
-    echo ""
-    read -p "   Продолжить установку? (y/n): " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        exit 1
-    fi
-fi
-
-echo "✅ Версия PHP подходит для установки"
+echo "✅ Версия PHP подходит"
 echo "============================================="
 
 # ОЧИСТКА ПАПКИ
@@ -93,7 +96,7 @@ if [ -d "esalanding-main" ]; then
 fi
 echo "✅ Тема esalanding установлена"
 
-# 4. УСТАНОВКА CARBON FIELDS
+# 4. УСТАНОВКА CARBON FIELDS (С ПРИНУДИТЕЛЬНЫМ PHP)
 echo "⚙️ Устанавливаю Carbon Fields в папку inc через composer..."
 
 # Создаём папку inc
@@ -108,11 +111,11 @@ rm -rf vendor composer.json composer.lock
 # Проверяем наличие composer
 if ! command -v composer &> /dev/null; then
     echo "❌ ОШИБКА: Composer не установлен!"
-    echo "   Установите Composer: https://getcomposer.org/"
     exit 1
 fi
 
-# Устанавливаем carbon-fields через composer
+# Устанавливаем carbon-fields через composer С ПРИНУДИТЕЛЬНЫМ PHP
+echo "   📥 Устанавливаю htmlburger/carbon-fields (с PHP $PHP_VERSION)..."
 composer require htmlburger/carbon-fields
 
 # Проверяем результат
@@ -135,12 +138,6 @@ echo ""
 echo "📂 Carbon Fields установлен в:"
 echo "   wp-content/themes/esalanding/inc/vendor/"
 echo ""
-echo "📂 Структура:"
-echo "   esalanding/inc/"
-echo "   ├── vendor/"
-echo "   │   ├── autoload.php"
-echo "   │   └── htmlburger/carbon-fields"
-echo "   ├── composer.json"
-echo "   └── composer.lock"
+echo "📂 Используется PHP: $PHP_VERSION"
 echo ""
 echo "============================================="
