@@ -47,7 +47,7 @@ rm -f latest.tar.gz
 # 2. ПЛАГИНЫ
 echo "🔌 Устанавливаю плагины..."
 cd wp-content/plugins/ || exit 1
-PLUGINS=("wordpress-seo" "contact-form-7" "classic-editor" "classic-widgets" "cyr2lat" "cookie-law-info" "yandex-metrica")
+PLUGINS=("wordpress-seo" "contact-form-7" "classic-editor" "classic-widgets" "cyr2lat" "cookie-law-info" "wp-yandex-metrika")
 for plugin in "${PLUGINS[@]}"; do
     echo "   📥 $plugin..."
     wget -q "https://downloads.wordpress.org/plugin/${plugin}.latest-stable.zip"
